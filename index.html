@@ -1,0 +1,22 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>SkinAdvisor — Ваш кожный ассистент</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>👋 Добро пожаловать, <span id="user-name">Пользователь</span>!</h1>
+        <p id="subscription-status">Загрузка подписки...</p>
+        <div id="analyses-list">
+            <h2>Ваши анализы</h2>
+            <ul id="analysis-items"></ul>
+        </div>
+        <button id="close-btn">Закрыть</button>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
