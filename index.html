@@ -1,9 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>SkinAdvisor — Ваш кожный ассистент</title>
+    <!-- Подключаем Telegram WebApp -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="style.css" />
 </head>
@@ -15,8 +16,75 @@
             <h2>Ваши анализы</h2>
             <ul id="analysis-items"></ul>
         </div>
-        <button id="close-btn">Закрыть</button>
+        <button id="close-btn" disabled>Закрыть</button>
     </div>
-    <script src="app.js"></script>
+
+    <!-- Встраиваем JS прямо в HTML для надёжности -->
+    <script>
+        // Мок для теста в браузере
+        if (!window.Telegram) {
+            window.Telegram = {
+                WebApp: {
+                    initDataUnsafe: {
+                        user: { id: 123, first_name: "Тест", last_name: "Пользователь" }
+                    },
+                    ready: () => console.log("📱 (Mock) WebApp ready"),
+                    close: () => alert("📱 (Mock) Mini App закрыт"),
+                    expand: () => console.log("📱 (Mock) Expand")
+                }
+            };
+        }
+
+        // Ждём полной загрузки DOM
+        document.addEventListener("DOMContentLoaded", () => {
+            const userNameEl = document.getElementById("user-name");
+            const statusEl = document.getElementById("subscription-status");
+            const closeBtn = document.getElementById("close-btn");
+
+            let telegramReady = false;
+
+            // Функция инициализации
+            function initApp() {
+                if (window.Telegram && Telegram.WebApp) {
+                    Telegram.WebApp.ready();
+                    Telegram.WebApp.expand(); // Раскрываем на весь экран
+
+                    const user = Telegram.WebApp.initDataUnsafe.user;
+                    userNameEl.textContent = user?.first_name || "Пользователь";
+
+                    statusEl.textContent = "Подписка: Premium";
+                    closeBtn.disabled = false;
+                    closeBtn.style.opacity = "1";
+
+                    telegramReady = true;
+                } else {
+                    statusEl.textContent = "❌ Ошибка: не в Telegram";
+                    closeBtn.disabled = true;
+                }
+            }
+
+            // Проверяем, загрузился ли Telegram WebApp
+            if (Telegram.WebApp) {
+                initApp();
+            } else {
+                // Ждём, пока загрузится
+                const interval = setInterval(() => {
+                    if (Telegram.WebApp) {
+                        clearInterval(interval);
+                        initApp();
+                    }
+                }, 100);
+            }
+
+            // Обработчик кнопки
+            closeBtn.onclick = () => {
+                if (telegramReady && Telegram.WebApp) {
+                    Telegram.WebApp.close();
+                } else {
+                    alert("❌ Mini App не готов. Откройте через Telegram.");
+                }
+            };
+        });
+    </script>
 </body>
 </html>
