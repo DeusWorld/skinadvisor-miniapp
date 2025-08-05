@@ -4,11 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>SkinAdvisor — Ваш кожный ассистент</title>
-    
     <!-- ВАЖНО: Никаких пробелов в URL -->
-    <!-- Подключаем Telegram WebApp первым -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -27,12 +24,9 @@
         if (!window.Telegram) {
             window.Telegram = {
                 WebApp: {
-                    initDataUnsafe: {
-                        user: { id: 123, first_name: "Тест", last_name: "Пользователь" }
-                    },
+                    initDataUnsafe: { user: { first_name: "Тест" } },
                     ready: () => console.log("📱 (Mock) WebApp ready"),
-                    close: () => alert("📱 (Mock) Mini App закрыт"),
-                    expand: () => console.log("📱 (Mock) Expand")
+                    close: () => alert("📱 (Mock) Mini App закрыт")
                 }
             };
         }
@@ -44,7 +38,6 @@
 
             let telegramReady = false;
 
-            // Функция инициализации
             function initApp() {
                 if (window.Telegram && Telegram.WebApp) {
                     Telegram.WebApp.ready();
@@ -52,11 +45,9 @@
 
                     const user = Telegram.WebApp.initDataUnsafe.user;
                     userNameEl.textContent = user?.first_name || "Пользователь";
-
                     statusEl.textContent = "Подписка: Premium";
                     closeBtn.disabled = false;
                     closeBtn.style.opacity = "1";
-
                     telegramReady = true;
                 } else {
                     statusEl.textContent = "❌ Ошибка: не в Telegram";
@@ -64,20 +55,17 @@
                 }
             }
 
-            // Проверяем, загрузился ли Telegram.WebApp
-            if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+            if (Telegram.WebApp) {
                 initApp();
             } else {
-                // Ждём, пока Telegram.WebApp появится
-                const checkInterval = setInterval(() => {
-                    if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
-                        clearInterval(checkInterval);
+                const interval = setInterval(() => {
+                    if (Telegram.WebApp) {
+                        clearInterval(interval);
                         initApp();
                     }
                 }, 50);
             }
 
-            // Обработчик кнопки
             closeBtn.onclick = () => {
                 if (telegramReady && Telegram.WebApp) {
                     Telegram.WebApp.close();
@@ -89,3 +77,4 @@
     </script>
 </body>
 </html>
+
